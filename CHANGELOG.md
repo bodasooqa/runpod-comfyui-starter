@@ -34,6 +34,10 @@ On each release (e.g. `2.0.0`):
 
 ### Added
 
+- Web services on port 8081: preset downloader, HuggingFace model downloader, CivitAI LoRA downloader, outputs browser (FastAPI + Uvicorn).
+- `PRESET_DOWNLOAD` environment variable for downloading model presets at boot time.
+- `scripts/download_models.sh` for batch preset downloads via shell.
+- `services/` directory with shared async download engine, per-router HTML templates, and static JS.
 - Centralized version pinning in `docker-bake.hcl` (single source of truth for ComfyUI, custom node SHAs, PyTorch, FileBrowser).
 - Hash-verified dependency lock file generated at build time via `pip-compile --generate-hashes`.
 - `scripts/fetch-hashes.sh` to query GitHub API for latest custom node commit SHAs.

@@ -19,7 +19,7 @@ Run the latest ComfyUI. All dependencies are pre-installed in the image. On firs
 
 ## Source Code
 
-This is an open source template. Source code available at: [github.com/runpod-workers/comfyui-base](https://github.com/runpod-workers/comfyui-base)
+This is an open source template. Source code available at: [github.com/bodasooqa/runpod-comfyui-starter](https://github.com/bodasooqa/runpod-comfyui-starter)
 
 ## Environment Variables
 

@@ -18,10 +18,10 @@ permissions:
 
 jobs:
   release:
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Clear space to remove unused folders
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "IMAGE_REF=runpod/comfyui" >> $GITHUB_ENV
+          echo "IMAGE_REF=bodasooqa/runpod-comfyui-starter" >> $GITHUB_ENV
 
           # Determine version based on trigger type
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
