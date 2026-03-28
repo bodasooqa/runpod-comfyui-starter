@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Downloader</title>
+  <style>
+    :root { --bg:#1e1e1e; --card:#282828; --text:#fff; --muted:#9ca3af; --accent:#fff; --border:#3a3a3a; }
+    html,body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, sans-serif; }
+    .wrap { max-width:800px; margin:0 auto; padding:40px 20px; }
+    h1 { font-size:32px; font-weight:800; margin:0 0 8px; text-align:center; }
+    .sub { margin:0 0 32px; color:var(--muted); text-align:center; }
+    .back { color:var(--muted); text-decoration:none; font-size:14px; }
+    .back:hover { color:var(--text); }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; }
+    .tabs { display:flex; gap:8px; margin-bottom:20px; }
+    .tab { padding:8px 16px; background:#1a1a1a; border:1px solid var(--border); border-radius:8px; cursor:pointer; transition:all .2s; }
+    .tab.active { background:var(--accent); color:var(--bg); }
+    .row { display:grid; grid-template-columns:180px 1fr; gap:16px; align-items:center; margin:16px 0; }
+    input[type=text], input[type=password], select { width:100%; padding:12px 16px; background:#1a1a1a; border:1px solid var(--border); color:var(--text); border-radius:8px; box-sizing:border-box; }
+    .hint { background:#1a1a1a; border:1px dashed var(--border); padding:16px; border-radius:8px; margin-bottom:20px; font-size:14px; color:var(--muted); line-height:1.6; }
+    .hint a { color:#4a9eff; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; background:rgba(255,193,7,.9); color:#000; font-weight:700; border:2px solid rgba(255,193,7,.5); border-radius:8px; cursor:pointer; transition:all .2s; }
+    .btn:hover { background:rgb(255,193,7); box-shadow:0 8px 20px rgba(255,193,7,.5); }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .result { white-space:pre-wrap; background:#1a1a1a; border:1px solid var(--border); padding:16px; border-radius:8px; margin-top:20px; min-height:24px; }
+    .progress { margin-top:20px; }
+    .progress-bar { width:100%; height:8px; background:#1a1a1a; border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+    .progress-fill { height:100%; background:var(--accent); width:0%; transition:width .3s; }
+    .progress-text { margin-top:8px; color:var(--muted); font-size:14px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a class="back" href="/">&larr; Back</a></p>
+    <h1>HuggingFace Model Downloader</h1>
+    <p class="sub">Download models by direct URL or HuggingFace repo</p>
+
+    <div class="card">
+      <div class="tabs">
+        <div class="tab hf-method-tab active" data-hf-method="url" onclick="switchHFMethod('url')">Direct URL</div>
+        <div class="tab hf-method-tab" data-hf-method="repo" onclick="switchHFMethod('repo')">HuggingFace Repo</div>
+      </div>
+
+      <form id="hf-url-form" action="/models/download-url" method="post">
+        <div class="row">
+          <label for="hf_url">File URL</label>
+          <input id="hf_url" type="text" name="url" placeholder="https://huggingface.co/user/model/resolve/main/file.safetensors" required>
+        </div>
+        <div class="row">
+          <label for="hf_url_folder">Destination folder</label>
+          <select id="hf_url_folder" name="folder">{{ folder_options }}</select>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn" type="submit" id="url-btn">Download by URL</button>
+        </div>
+      </form>
+
+      <form id="hf-repo-form" action="/models/download-hf" method="post" style="display:none;">
+        <div class="row">
+          <label for="hf_repo">Repository</label>
+          <input id="hf_repo" type="text" name="repo" placeholder="username/model-name" required>
+        </div>
+        <div class="row">
+          <label for="hf_file">File (optional)</label>
+          <input id="hf_file" type="text" name="filename" placeholder="model.safetensors">
+        </div>
+        <div class="row">
+          <label for="hf_token">API token (optional)</label>
+          <input id="hf_token" type="password" name="token" placeholder="hf_..." autocomplete="current-password">
+        </div>
+        <div class="hint">
+          <b>How to get a token:</b>
+          Go to <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co/settings/tokens</a>,
+          create a token with "Read" access, and paste it above. Only needed for private/gated models.
+        </div>
+        <div class="row">
+          <label for="hf_folder">Destination folder</label>
+          <select id="hf_folder" name="folder">{{ folder_options }}</select>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn" type="submit" id="repo-btn">Download from HuggingFace</button>
+        </div>
+      </form>
+
+      <div class="result" id="hf-result"></div>
+      <div class="progress" id="hf-progress" style="display:none;">
+        <div class="progress-bar"><div class="progress-fill" id="hf-progress-fill"></div></div>
+        <div class="progress-text" id="hf-progress-text">Downloading...</div>
+      </div>
+    </div>
+  </div>
+  <script src="/static/app.js"></script>
+  <script>
+    (function() {
+      var result = document.getElementById('hf-result');
+      var progress = document.getElementById('hf-progress');
+      var fill = document.getElementById('hf-progress-fill');
+      var ptext = document.getElementById('hf-progress-text');
+
+      submitAsync(
+        document.getElementById('hf-url-form'), result, progress, fill, ptext,
+        document.getElementById('url-btn'), 'Download by URL', '/models'
+      );
+      submitAsync(
+        document.getElementById('hf-repo-form'), result, progress, fill, ptext,
+        document.getElementById('repo-btn'), 'Download from HuggingFace', '/models'
+      );
+    })();
+  </script>
+</body>
+</html>

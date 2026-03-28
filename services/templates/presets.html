@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preset Downloader</title>
+  <style>
+    :root { --bg:#1e1e1e; --card:#282828; --text:#fff; --muted:#9ca3af; --accent:#fff; --border:#3a3a3a; }
+    html,body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, sans-serif; }
+    .wrap { max-width:1000px; margin:0 auto; padding:40px 20px; }
+    h1 { font-size:32px; font-weight:800; margin:0 0 8px; text-align:center; }
+    .sub { margin:0 0 32px; color:var(--muted); text-align:center; }
+    .back { color:var(--muted); text-decoration:none; font-size:14px; }
+    .back:hover { color:var(--text); }
+    .preset-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin:20px 0; }
+    .preset-card { background:#1a1a1a; border:1px solid var(--border); border-radius:8px; padding:16px; cursor:pointer; transition:all .2s; }
+    .preset-card:hover { border-color:var(--accent); background:#222; }
+    .preset-card.selected { border-color:var(--accent); background:rgba(255,255,255,.1); }
+    .preset-name { font-weight:700; margin-bottom:8px; }
+    .preset-desc { color:var(--muted); font-size:14px; margin-bottom:8px; }
+    .preset-info { font-size:12px; color:var(--muted); }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; background:rgba(34,197,94,.9); color:#fff; font-weight:700; border:2px solid rgba(34,197,94,.5); border-radius:8px; cursor:pointer; transition:all .2s; }
+    .btn:hover { background:rgb(34,197,94); box-shadow:0 8px 20px rgba(34,197,94,.5); }
+    .btn:disabled { opacity:.5; cursor:not-allowed; }
+    .result { white-space:pre-wrap; background:#1a1a1a; border:1px solid var(--border); padding:16px; border-radius:8px; margin-top:20px; min-height:24px; }
+    .progress { margin-top:20px; }
+    .progress-bar { width:100%; height:8px; background:#1a1a1a; border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+    .progress-fill { height:100%; background:var(--accent); width:0%; transition:width .3s; }
+    .progress-text { margin-top:8px; color:var(--muted); font-size:14px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p><a class="back" href="/">&larr; Back</a></p>
+    <h1>Preset Downloader</h1>
+    <p class="sub">Select presets and download all required models in one click</p>
+
+    <div class="preset-grid">
+      {{ preset_cards }}
+    </div>
+
+    <div style="margin-top:20px;">
+      <button class="btn" id="download-presets-btn" onclick="downloadPresets()" disabled>Download selected</button>
+    </div>
+
+    <div class="result" id="preset-result"></div>
+    <div class="progress" id="preset-progress" style="display:none;">
+      <div class="progress-bar"><div class="progress-fill" id="preset-progress-fill"></div></div>
+      <div class="progress-text" id="preset-progress-text">Downloading...</div>
+    </div>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

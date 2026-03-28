@@ -10,7 +10,7 @@ This document outlines how to work in this repository from a developer point of 
   - RTX 5090 image: CUDA 13.0, PyTorch (pinned version, cu130 wheels)
 - **Python**: 3.12 (set as system default inside the image)
 - **Package manager**: pip + pip-tools (lock file generated at build time with `pip-compile --generate-hashes`)
-- **Tools bundled**: FileBrowser (port 8080), JupyterLab (port 8888), OpenSSH server (port 22), FFmpeg (NVENC), common CLI tools
+- **Tools bundled**: FileBrowser (port 8080), JupyterLab (port 8888), Web Services (port 8081), OpenSSH server (port 22), FFmpeg (NVENC), common CLI tools
 - **Primary app**: ComfyUI, with pre-installed custom nodes
 
 ## Repository Layout
@@ -19,6 +19,8 @@ This document outlines how to work in this repository from a developer point of 
 - `start.sh` – Runtime bootstrap (shared by all variants)
 - `docker-bake.hcl` – Buildx bake targets (`regular`, `dev`, `rtx5090`) and all version pins (single source of truth)
 - `scripts/fetch-hashes.sh` – Fetches latest custom node commit hashes from GitHub
+- `scripts/download_models.sh` – CLI preset downloader, reads from `services/presets.json`
+- `services/` – FastAPI web services (preset/model/CivitAI downloader, outputs browser)
 - `README.md` – User-facing overview
 - `docs/context.md` – This document
 
@@ -69,6 +71,8 @@ Startup is handled by `start.sh` (shared by all variants):
 - Exports selected env vars broadly to `/etc/environment`, PAM, and `~/.ssh/environment` for non-interactive shells.
 - Initializes and starts FileBrowser on port 8080 (root `/workspace`). Default admin user is created on first run.
 - Starts JupyterLab on port 8888, root at `/workspace`. Token set via `JUPYTER_PASSWORD` if provided.
+- Starts web services on port 8081 (FastAPI app: preset downloader, HF model downloader, CivitAI LoRA downloader, outputs browser).
+- If `PRESET_DOWNLOAD` env var is set, runs `download_models.sh` to fetch model presets before starting ComfyUI.
 - Ensures `comfyui_args.txt` exists.
 - On first boot: copies baked ComfyUI and custom nodes from `/opt/comfyui-baked` to `/workspace/runpod-slim/ComfyUI/`, then creates a Python 3.12 venv with `--system-site-packages`.
 - On subsequent boots: activates existing venv (no network calls).
@@ -78,6 +82,7 @@ Startup is handled by `start.sh` (shared by all variants):
 
 - 8188 – ComfyUI
 - 8080 – FileBrowser
+- 8081 – Web Services (preset/model downloader, CivitAI LoRA, outputs browser)
 - 8888 – JupyterLab
 - 22 – SSH
 
@@ -89,6 +94,7 @@ Recognized at runtime by the start scripts:
 
 - `PUBLIC_KEY` – If provided, enables key-based SSH for root; otherwise a random password is generated and printed.
 - `JUPYTER_PASSWORD` – If set, used as the JupyterLab token (no browser; root at `/workspace`).
+- `PRESET_DOWNLOAD` – Comma-separated preset names (e.g. `WAN_T2V,WAN_I2V`). If set, `download_models.sh` runs at boot before ComfyUI starts. Presets are defined in `/opt/services/presets.json`.
 - GPU/CUDA-related environment variables are propagated (`CUDA*`, `LD_LIBRARY_PATH`, `PYTHONPATH`, and `RUNPOD_*` vars if present in the environment).
 
 ## Dependency Management
@@ -126,9 +132,21 @@ Preinstalled custom nodes:
 ## Customization Points
 
 - `comfyui_args.txt` – Add one CLI arg per line; comments starting with `#` are ignored. These are appended after fixed args.
+- `services/presets.json` – Define model presets for the web downloader and `download_models.sh`. Ships empty; see the `_example` key for format.
 - Add/remove custom nodes by adding/removing download blocks and ARGs in the Dockerfile.
 - Additional system packages: modify the Dockerfile `apt-get install` lines.
 - Users can install additional custom nodes at runtime via ComfyUI-Manager (user's responsibility, not baked).
+
+## Web Services (`/opt/services`)
+
+A single FastAPI application on port 8081 provides four sub-services:
+
+- `/presets` – Download pre-configured model bundles defined in `presets.json`.
+- `/models` – Download models from HuggingFace by direct URL or repo name (supports API tokens for gated models).
+- `/civitai` – Download LoRA from CivitAI with API token. Auto-unzips `.zip` downloads.
+- `/outputs` – Browse and download files from ComfyUI's output directory.
+
+All downloads are async with real-time progress tracking via polling. Completed tasks auto-expire from memory after 1 hour.
 
 ## Dev Conventions
 
@@ -146,7 +164,7 @@ Preinstalled custom nodes:
 - Use the `dev` target to build a locally loadable image without pushing:
   ```bash
   docker buildx bake -f docker-bake.hcl dev
-  docker run --rm -p 8188:8188 -p 8080:8080 -p 8888:8888 -p 2222:22 \
+  docker run --rm -p 8188:8188 -p 8080:8080 -p 8081:8081 -p 8888:8888 -p 2222:22 \
     -e PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)" \
     -e JUPYTER_PASSWORD=yourtoken \
     -v "$PWD/workspace":/workspace \

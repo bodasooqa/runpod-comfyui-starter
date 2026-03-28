@@ -100,6 +100,11 @@ RUN cat ComfyUI/requirements.txt > requirements.in && \
     echo "jupyter" >> requirements.in && \
     echo "jupyter-resource-usage" >> requirements.in && \
     echo "jupyterlab-nvdashboard" >> requirements.in && \
+    echo "fastapi" >> requirements.in && \
+    echo "uvicorn[standard]" >> requirements.in && \
+    echo "python-multipart" >> requirements.in && \
+    echo "aiohttp" >> requirements.in && \
+    echo "huggingface_hub" >> requirements.in && \
     echo "torch==${TORCH_VERSION}" >> constraints.txt && \
     echo "torchvision==${TORCHVISION_VERSION}" >> constraints.txt && \
     echo "torchaudio==${TORCHAUDIO_VERSION}" >> constraints.txt && \
@@ -211,8 +216,12 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 RUN mkdir -p /workspace/runpod-slim
 WORKDIR /workspace/runpod-slim
 
+# Copy web services and download script
+COPY services /opt/services
+COPY --chmod=755 scripts/download_models.sh /scripts/download_models.sh
+
 # Expose ports
-EXPOSE 8188 22 8888 8080
+EXPOSE 8188 22 8888 8080 8081
 
 # Copy start script
 COPY start.sh /start.sh

@@ -1,0 +1,13 @@
+{
+  "_example": {
+    "_comment": "This key is ignored. Copy the structure below to add your own presets.",
+    "name": "Example Preset",
+    "description": "What this preset does",
+    "size": "~10GB",
+    "time": "5-10 min",
+    "files": [
+      {"url": "https://huggingface.co/user/repo/resolve/main/model.safetensors", "folder": "diffusion_models"},
+      {"url": "https://huggingface.co/user/repo/resolve/main/vae.safetensors", "folder": "vae", "filename": "custom_name.safetensors"}
+    ]
+  }
+}

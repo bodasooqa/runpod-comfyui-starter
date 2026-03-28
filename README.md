@@ -6,6 +6,7 @@ Run the latest ComfyUI. All dependencies are pre-installed in the image. On firs
 
 - `8188`: ComfyUI web UI
 - `8080`: FileBrowser (admin / adminadmin12)
+- `8081`: Web Services — preset downloader, HuggingFace model downloader, CivitAI LoRA downloader, outputs browser
 - `8888`: JupyterLab (token via `JUPYTER_PASSWORD`, root at `/workspace`)
 - `22`: SSH (set `PUBLIC_KEY` or check logs for generated root password)
 
@@ -19,6 +20,12 @@ Run the latest ComfyUI. All dependencies are pre-installed in the image. On firs
 ## Source Code
 
 This is an open source template. Source code available at: [github.com/runpod-workers/comfyui-base](https://github.com/runpod-workers/comfyui-base)
+
+## Environment Variables
+
+- `JUPYTER_PASSWORD`: Token for JupyterLab access
+- `PUBLIC_KEY`: SSH public key for root login (otherwise a random password is generated)
+- `PRESET_DOWNLOAD`: Comma-separated preset names to download at boot (e.g. `WAN_T2V,WAN_I2V`). Presets are defined in `/opt/services/presets.json`.
 
 ## Custom Arguments
 

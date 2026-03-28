@@ -102,6 +102,15 @@ start_jupyter() {
     echo "Jupyter Lab started"
 }
 
+# Start web services (preset downloader, model downloader, CivitAI, outputs browser)
+start_services() {
+    echo "Starting web services on port 8081..."
+    COMFYUI_DIR="$COMFYUI_DIR" nohup python3.12 -m uvicorn services.app:app \
+        --host 0.0.0.0 --port 8081 \
+        --app-dir /opt &> /services.log &
+    echo "Web services started"
+}
+
 # ---------------------------------------------------------------------------- #
 #                               Main Program                                     #
 # ---------------------------------------------------------------------------- #
@@ -128,6 +137,7 @@ echo "Starting FileBrowser on port 8080..."
 nohup filebrowser &> /filebrowser.log &
 
 start_jupyter
+start_services
 
 # Create default comfyui_args.txt if it doesn't exist
 ARGS_FILE="/workspace/runpod-slim/comfyui_args.txt"
@@ -202,6 +212,12 @@ fi
 
 # Warm up pip so ComfyUI-Manager's 5s timeout check doesn't fail on cold start
 python -m pip --version > /dev/null 2>&1
+
+# Download model presets if PRESET_DOWNLOAD env var is set (e.g. "WAN_T2V,WAN_I2V")
+if [ -n "${PRESET_DOWNLOAD:-}" ]; then
+    echo "Downloading model presets: $PRESET_DOWNLOAD"
+    COMFYUI_DIR="$COMFYUI_DIR" bash /scripts/download_models.sh "$PRESET_DOWNLOAD" || true
+fi
 
 # Start ComfyUI — keep container alive if it crashes so SSH/Jupyter remain accessible
 cd $COMFYUI_DIR
