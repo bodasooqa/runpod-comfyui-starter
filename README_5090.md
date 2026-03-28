@@ -5,7 +5,7 @@ Run the latest ComfyUI optimized for NVIDIA Blackwell architecture (RTX 5090, B2
 ## Access
 
 - `8188`: ComfyUI web UI
-- `8080`: FileBrowser (admin / adminadmin12)
+- `8080`: FileBrowser (admin / qwerty123)
 - `8081`: Web Services — preset downloader, HuggingFace model downloader, CivitAI LoRA downloader, outputs browser
 - `8888`: JupyterLab (token via `JUPYTER_PASSWORD`, root at `/workspace`)
 - `22`: SSH (set `PUBLIC_KEY` or check logs for generated root password)
