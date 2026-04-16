@@ -110,7 +110,10 @@ RUN cat ComfyUI/requirements.txt > requirements.in && \
     echo "torchaudio==${TORCHAUDIO_VERSION}" >> constraints.txt && \
     echo "pillow>=12.1.1" >> constraints.txt && \
     PIP_CONSTRAINT=constraints.txt pip-compile --generate-hashes --output-file=requirements.lock --strip-extras --allow-unsafe requirements.in && \
-    python3.12 -m pip install --no-cache-dir --ignore-installed --require-hashes -r requirements.lock
+    python3.12 -m pip install --no-cache-dir --ignore-installed --require-hashes -r requirements.lock && \
+    python3.12 -m pip install --no-cache-dir --force-reinstall --no-deps \
+        torch==${TORCH_VERSION} torchvision==${TORCHVISION_VERSION} torchaudio==${TORCHAUDIO_VERSION} \
+        --index-url https://download.pytorch.org/whl/${TORCH_INDEX_SUFFIX}
 
 # Pre-populate ComfyUI-Manager cache so first cold start skips the slow registry fetch
 COPY scripts/prebake-manager-cache.py /tmp/prebake-manager-cache.py
