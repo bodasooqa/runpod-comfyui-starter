@@ -9,5 +9,46 @@
       {"url": "https://huggingface.co/user/repo/resolve/main/model.safetensors", "folder": "diffusion_models"},
       {"url": "https://huggingface.co/user/repo/resolve/main/vae.safetensors", "folder": "vae", "filename": "custom_name.safetensors"}
     ]
+  },
+  "Z_IMAGE": {
+    "name": "Z-Image Turbo — full pipeline",
+    "description": "Model + CLIP + VAE + herpov LoRA + upscalers + face detection (SAM) models for the Z-Image workflow",
+    "size": "~13 GB",
+    "time": "15-25 min",
+    "files": [
+      {
+        "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors",
+        "folder": "diffusion_models"
+      },
+      {
+        "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors",
+        "folder": "text_encoders"
+      },
+      {
+        "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors",
+        "folder": "vae"
+      },
+      {
+        "url": "https://civitai.red/api/download/models/2451867?type=Model&format=SafeTensor",
+        "folder": "loras",
+        "filename": "herpov-zimage.safetensors"
+      },
+      {
+        "url": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/4x_NMKD-Siax_200k.pth",
+        "folder": "upscale_models"
+      },
+      {
+        "url": "https://huggingface.co/uwg/upscaler/resolve/main/ESRGAN/4x_foolhardy_Remacri.pth",
+        "folder": "upscale_models"
+      },
+      {
+        "url": "https://huggingface.co/Bingsu/adetailer/resolve/main/face_yolov8m.pt",
+        "folder": "ultralytics/bbox"
+      },
+      {
+        "url": "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth",
+        "folder": "sams"
+      }
+    ]
   }
 }

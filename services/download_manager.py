@@ -14,6 +14,7 @@ import aiohttp
 COMFYUI_DIR = os.environ.get("COMFYUI_DIR", "/workspace/runpod-slim/ComfyUI")
 MODELS_DIR = os.path.join(COMFYUI_DIR, "models")
 OUTPUT_DIR = os.path.join(COMFYUI_DIR, "output")
+CIVITAI_API_KEY = os.environ.get("CIVITAI_API_KEY", "")
 
 TASK_TTL_SECONDS = 3600
 CHUNK_SIZE = 1024 * 1024
@@ -89,6 +90,7 @@ class DownloadManager:
 
         status is one of: "downloaded", "skipped", "failed".
         """
+        url = _inject_civitai_token(url)
         filename = custom_filename or _filename_from_url(url)
         filepath = os.path.join(dest_dir, filename)
         os.makedirs(dest_dir, exist_ok=True)
@@ -245,6 +247,14 @@ def unzip_and_remove(zip_path: str, extract_to: str) -> list[str]:
             extracted.append(basename)
     os.remove(zip_path)
     return extracted
+
+
+def _inject_civitai_token(url: str) -> str:
+    """Append CivitAI API token to the URL if it's a CivitAI link and the token is set."""
+    if CIVITAI_API_KEY and "civitai" in url:
+        sep = "&" if "?" in url else "?"
+        return f"{url}{sep}token={CIVITAI_API_KEY}"
+    return url
 
 
 def _filename_from_url(url: str) -> str:

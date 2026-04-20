@@ -115,6 +115,43 @@ start_services() {
 #                               Main Program                                     #
 # ---------------------------------------------------------------------------- #
 
+# ---- Serverless mode -------------------------------------------------------
+# Set RUNPOD_SERVERLESS=1 in your Runpod serverless template env vars.
+# Skips pod-only services (FileBrowser, Jupyter, web services) and runs the
+# runpod handler instead.
+if [[ "${RUNPOD_SERVERLESS:-0}" == "1" ]]; then
+    echo "=== Starting in Serverless Mode ==="
+
+    # First-run: copy baked ComfyUI to workspace and create venv
+    if [ ! -d "$COMFYUI_DIR" ]; then
+        echo "Copying baked ComfyUI to workspace..."
+        cp -r /opt/comfyui-baked "$COMFYUI_DIR"
+    fi
+    if [ ! -d "$VENV_DIR" ]; then
+        cd "$COMFYUI_DIR"
+        python3.12 -m venv --system-site-packages "$VENV_DIR"
+    fi
+
+    source "$VENV_DIR/bin/activate"
+    python -m pip --version > /dev/null 2>&1
+
+    # Build ComfyUI arg string (respects comfyui_args.txt if present)
+    ARGS_FILE="/workspace/runpod-slim/comfyui_args.txt"
+    SL_ARGS="--listen 0.0.0.0 --port 8188"
+    if [ -s "$ARGS_FILE" ]; then
+        CUSTOM_ARGS=$(grep -v '^#' "$ARGS_FILE" | tr '\n' ' ')
+        [ -n "$CUSTOM_ARGS" ] && SL_ARGS="$SL_ARGS $CUSTOM_ARGS"
+    fi
+
+    echo "Starting ComfyUI: $SL_ARGS"
+    cd "$COMFYUI_DIR"
+    python main.py $SL_ARGS &
+
+    # Handler waits for ComfyUI to be ready, then calls runpod.serverless.start()
+    exec python /opt/handler.py
+fi
+# ---- End serverless mode ---------------------------------------------------
+
 # Setup environment
 setup_ssh
 export_env_vars
@@ -160,7 +197,7 @@ if [ -d "$OLD_VENV_DIR" ] && [ ! -d "$VENV_DIR" ]; then
     source "$VENV_DIR/bin/activate"
     python -m ensurepip
     # Skip nodes baked into the image — their deps are in system site-packages
-    BAKED_NODES="ComfyUI-Manager ComfyUI-KJNodes Civicomfy ComfyUI-RunpodDirect"
+    BAKED_NODES="ComfyUI-Manager ComfyUI-KJNodes Civicomfy ComfyUI-RunpodDirect efficiency-nodes-comfyui rgthree-comfy ComfyUI-Impact-Pack ComfyUI-Impact-Subpack CRT-Nodes ComfyUI-Inpaint-CropAndStitch ComfyUI-TBG-SAM3"
     CURRENT=0
     INSTALLED=0
     for req in "$COMFYUI_DIR"/custom_nodes/*/requirements.txt; do

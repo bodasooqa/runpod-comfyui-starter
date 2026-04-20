@@ -44,6 +44,27 @@ variable "FILEBROWSER_VERSION" {
 variable "FILEBROWSER_SHA256" {
   default = "8cd8c3baecb086028111b912f252a6e3169737fa764b5c510139e81f9da87799"
 }
+variable "EFFICIENCY_SHA" {
+  default = "040e38864616"
+}
+variable "RGTHREE_SHA" {
+  default = "683836c46e89"
+}
+variable "IMPACT_SHA" {
+  default = "6a517ebe06fe"
+}
+variable "IMPACT_SUBPACK_SHA" {
+  default = "50c7b71a6a22"
+}
+variable "CRT_SHA" {
+  default = "cd6b02fce98f"
+}
+variable "INPAINT_SHA" {
+  default = "8e59ab12d670"
+}
+variable "TBGSAM3_SHA" {
+  default = "f6155bfb6ded"
+}
 
 group "default" {
   targets = ["common", "dev"]
@@ -65,6 +86,13 @@ target "common" {
     TORCHAUDIO_VERSION  = TORCHAUDIO_VERSION
     FILEBROWSER_VERSION = FILEBROWSER_VERSION
     FILEBROWSER_SHA256  = FILEBROWSER_SHA256
+    EFFICIENCY_SHA      = EFFICIENCY_SHA
+    RGTHREE_SHA         = RGTHREE_SHA
+    IMPACT_SHA          = IMPACT_SHA
+    IMPACT_SUBPACK_SHA  = IMPACT_SUBPACK_SHA
+    CRT_SHA             = CRT_SHA
+    INPAINT_SHA         = INPAINT_SHA
+    TBGSAM3_SHA         = TBGSAM3_SHA
     CUDA_VERSION_DASH   = "12-8"
     TORCH_INDEX_SUFFIX  = "cu128"
   }

@@ -13,6 +13,7 @@ set -euo pipefail
 PRESETS_JSON="${PRESETS_JSON:-/opt/services/presets.json}"
 COMFYUI_DIR="${COMFYUI_DIR:-/workspace/runpod-slim/ComfyUI}"
 MODELS_DIR="${COMFYUI_DIR}/models"
+CIVITAI_API_KEY="${CIVITAI_API_KEY:-}"
 
 if [ $# -eq 0 ] || [ -z "$1" ]; then
     echo "Usage: $0 PRESET1,PRESET2,..."
@@ -51,6 +52,11 @@ download_if_missing() {
     local custom_filename="$3"
     local current_num="$4"
     local total_num="$5"
+
+    # Append CivitAI token if URL is from civitai and key is set
+    if [[ "$url" == *"civitai"* ]] && [ -n "$CIVITAI_API_KEY" ]; then
+        url="${url}&token=${CIVITAI_API_KEY}"
+    fi
 
     local filename
     if [ -n "$custom_filename" ]; then

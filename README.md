@@ -25,7 +25,9 @@ This is an open source template. Source code available at: [github.com/bodasooqa
 
 - `JUPYTER_PASSWORD`: Token for JupyterLab access
 - `PUBLIC_KEY`: SSH public key for root login (otherwise a random password is generated)
-- `PRESET_DOWNLOAD`: Comma-separated preset names to download at boot (e.g. `WAN_T2V,WAN_I2V`). Presets are defined in `/opt/services/presets.json`.
+- `PRESET_DOWNLOAD`: Comma-separated preset names to download at boot (e.g. `Z_IMAGE`). Presets are defined in `/opt/services/presets.json`.
+- `CIVITAI_API_KEY`: CivitAI API token — required for downloading models from CivitAI. Get yours at civitai.com/user/account.
+- `RUNPOD_SERVERLESS`: Set to `1` to run in serverless mode (skips pod-only services, starts the runpod handler instead).
 
 ## Custom Arguments
 

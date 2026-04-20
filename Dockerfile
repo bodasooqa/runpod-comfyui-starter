@@ -14,6 +14,13 @@ ARG RUNPODDIRECT_SHA
 ARG TORCH_VERSION
 ARG TORCHVISION_VERSION
 ARG TORCHAUDIO_VERSION
+ARG EFFICIENCY_SHA
+ARG RGTHREE_SHA
+ARG IMPACT_SHA
+ARG IMPACT_SUBPACK_SHA
+ARG CRT_SHA
+ARG INPAINT_SHA
+ARG TBGSAM3_SHA
 
 # ---- CUDA variant (set in docker-bake.hcl per target) ----
 ARG CUDA_VERSION_DASH=12-8
@@ -62,7 +69,21 @@ RUN curl -fSL "https://github.com/ltdrdata/ComfyUI-Manager/archive/${MANAGER_SHA
     curl -fSL "https://github.com/MoonGoblinDev/Civicomfy/archive/${CIVICOMFY_SHA}.tar.gz" -o civicomfy.tar.gz && \
     mkdir -p Civicomfy && tar xzf civicomfy.tar.gz --strip-components=1 -C Civicomfy && rm civicomfy.tar.gz && \
     curl -fSL "https://github.com/MadiatorLabs/ComfyUI-RunpodDirect/archive/${RUNPODDIRECT_SHA}.tar.gz" -o runpoddirect.tar.gz && \
-    mkdir -p ComfyUI-RunpodDirect && tar xzf runpoddirect.tar.gz --strip-components=1 -C ComfyUI-RunpodDirect && rm runpoddirect.tar.gz
+    mkdir -p ComfyUI-RunpodDirect && tar xzf runpoddirect.tar.gz --strip-components=1 -C ComfyUI-RunpodDirect && rm runpoddirect.tar.gz && \
+    curl -fSL "https://github.com/LucianoCirino/efficiency-nodes-comfyui/archive/${EFFICIENCY_SHA}.tar.gz" -o efficiency.tar.gz && \
+    mkdir -p efficiency-nodes-comfyui && tar xzf efficiency.tar.gz --strip-components=1 -C efficiency-nodes-comfyui && rm efficiency.tar.gz && \
+    curl -fSL "https://github.com/rgthree/rgthree-comfy/archive/${RGTHREE_SHA}.tar.gz" -o rgthree.tar.gz && \
+    mkdir -p rgthree-comfy && tar xzf rgthree.tar.gz --strip-components=1 -C rgthree-comfy && rm rgthree.tar.gz && \
+    curl -fSL "https://github.com/ltdrdata/ComfyUI-Impact-Pack/archive/${IMPACT_SHA}.tar.gz" -o impact.tar.gz && \
+    mkdir -p ComfyUI-Impact-Pack && tar xzf impact.tar.gz --strip-components=1 -C ComfyUI-Impact-Pack && rm impact.tar.gz && \
+    curl -fSL "https://github.com/ltdrdata/ComfyUI-Impact-Subpack/archive/${IMPACT_SUBPACK_SHA}.tar.gz" -o impact-subpack.tar.gz && \
+    mkdir -p ComfyUI-Impact-Subpack && tar xzf impact-subpack.tar.gz --strip-components=1 -C ComfyUI-Impact-Subpack && rm impact-subpack.tar.gz && \
+    curl -fSL "https://github.com/PGCRT/CRT-Nodes/archive/${CRT_SHA}.tar.gz" -o crt.tar.gz && \
+    mkdir -p CRT-Nodes && tar xzf crt.tar.gz --strip-components=1 -C CRT-Nodes && rm crt.tar.gz && \
+    curl -fSL "https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch/archive/${INPAINT_SHA}.tar.gz" -o inpaint.tar.gz && \
+    mkdir -p ComfyUI-Inpaint-CropAndStitch && tar xzf inpaint.tar.gz --strip-components=1 -C ComfyUI-Inpaint-CropAndStitch && rm inpaint.tar.gz && \
+    curl -fSL "https://github.com/Ltamann/ComfyUI-TBG-SAM3/archive/${TBGSAM3_SHA}.tar.gz" -o tbgsam3.tar.gz && \
+    mkdir -p ComfyUI-TBG-SAM3 && tar xzf tbgsam3.tar.gz --strip-components=1 -C ComfyUI-TBG-SAM3 && rm tbgsam3.tar.gz
 
 # Init git repos with upstream remotes so ComfyUI-Manager can detect versions
 # and users can update via Manager at their own risk
@@ -80,7 +101,28 @@ RUN cd /tmp/build/ComfyUI && \
     git remote add origin https://github.com/MoonGoblinDev/Civicomfy.git && \
     cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-RunpodDirect && \
     git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-RunpodDirect ${RUNPODDIRECT_SHA}" && \
-    git remote add origin https://github.com/MadiatorLabs/ComfyUI-RunpodDirect.git
+    git remote add origin https://github.com/MadiatorLabs/ComfyUI-RunpodDirect.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/efficiency-nodes-comfyui && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "efficiency-nodes-comfyui ${EFFICIENCY_SHA}" && \
+    git remote add origin https://github.com/LucianoCirino/efficiency-nodes-comfyui.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/rgthree-comfy && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "rgthree-comfy ${RGTHREE_SHA}" && \
+    git remote add origin https://github.com/rgthree/rgthree-comfy.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-Impact-Pack && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-Impact-Pack ${IMPACT_SHA}" && \
+    git remote add origin https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-Impact-Subpack && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-Impact-Subpack ${IMPACT_SUBPACK_SHA}" && \
+    git remote add origin https://github.com/ltdrdata/ComfyUI-Impact-Subpack.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/CRT-Nodes && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "CRT-Nodes ${CRT_SHA}" && \
+    git remote add origin https://github.com/PGCRT/CRT-Nodes.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-Inpaint-CropAndStitch && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-Inpaint-CropAndStitch ${INPAINT_SHA}" && \
+    git remote add origin https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch.git && \
+    cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-TBG-SAM3 && \
+    git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-TBG-SAM3 ${TBGSAM3_SHA}" && \
+    git remote add origin https://github.com/Ltamann/ComfyUI-TBG-SAM3.git
 
 # Install PyTorch (pinned version)
 RUN python3.12 -m pip install --no-cache-dir \
@@ -105,6 +147,7 @@ RUN cat ComfyUI/requirements.txt > requirements.in && \
     echo "python-multipart" >> requirements.in && \
     echo "aiohttp" >> requirements.in && \
     echo "huggingface_hub" >> requirements.in && \
+    echo "runpod" >> requirements.in && \
     echo "torch==${TORCH_VERSION}" >> constraints.txt && \
     echo "torchvision==${TORCHVISION_VERSION}" >> constraints.txt && \
     echo "torchaudio==${TORCHAUDIO_VERSION}" >> constraints.txt && \
@@ -222,6 +265,10 @@ WORKDIR /workspace/runpod-slim
 # Copy web services and download script
 COPY services /opt/services
 COPY --chmod=755 scripts/download_models.sh /scripts/download_models.sh
+
+# Copy serverless handler and workflow
+COPY serverless/handler.py /opt/handler.py
+COPY serverless/workflow_api.json /opt/workflow_api.json
 
 # Expose ports
 EXPOSE 8188 22 8888 8080 8081
