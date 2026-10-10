@@ -62,10 +62,6 @@ variable "CRT_SHA" {
 variable "INPAINT_SHA" {
   default = "8584b08d8517"
 }
-# sam2 is a git+ dependency of ComfyUI-Impact-Pack; must be a full 40-char SHA
-variable "SAM2_SHA" {
-  default = "2b90b9f5ceec907a1c18123530e92e794ad901a4"
-}
 variable "TBGSAM3_SHA" {
   default = "90e47e22c38f"
 }
@@ -97,7 +93,6 @@ target "common" {
     CRT_SHA             = CRT_SHA
     INPAINT_SHA         = INPAINT_SHA
     TBGSAM3_SHA         = TBGSAM3_SHA
-    SAM2_SHA            = SAM2_SHA
     CUDA_VERSION_DASH   = "12-8"
     TORCH_INDEX_SUFFIX  = "cu128"
   }

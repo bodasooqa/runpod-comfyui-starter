@@ -21,7 +21,6 @@ ARG IMPACT_SUBPACK_SHA
 ARG CRT_SHA
 ARG INPAINT_SHA
 ARG TBGSAM3_SHA
-ARG SAM2_SHA
 
 # ---- CUDA variant (set in docker-bake.hcl per target) ----
 ARG CUDA_VERSION_DASH=12-8
@@ -129,9 +128,8 @@ RUN cd /tmp/build/ComfyUI && \
 WORKDIR /tmp/build
 # Append a newline after each file: some requirements.txt lack a trailing newline,
 # which would glue the last line of one file to the first line of the next.
-# VCS requirements (git+...) can't be hash-locked, so they are split out and
-# installed without deps after the locked set (their deps are in the lock).
-# Each must be pinned to a full commit SHA (sam2 is pinned via SAM2_SHA).
+# sam2 (optional git+ dependency of Impact-Pack) is dropped: it is not needed and
+# VCS requirements can't be hash-locked, so any other git+ line fails the build.
 RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     for node_dir in ComfyUI/custom_nodes/*/; do \
         if [ -f "$node_dir/requirements.txt" ]; then \
@@ -149,13 +147,9 @@ RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     echo "aiohttp" >> requirements.in && \
     echo "huggingface_hub" >> requirements.in && \
     echo "runpod" >> requirements.in && \
-    echo "setuptools" >> requirements.in && \
-    echo "wheel" >> requirements.in && \
-    grep -E '^[[:space:]]*[^#]*git\+' requirements.in > requirements-vcs.txt || true && \
-    sed -i -E '/^[[:space:]]*[^#]*git\+/d' requirements.in && \
-    sed -i -E "s#git\+https://github.com/facebookresearch/sam2(\.git)?[[:space:]]*\$#git+https://github.com/facebookresearch/sam2@${SAM2_SHA}#" requirements-vcs.txt && \
-    if grep -vqE '@[0-9a-f]{40}[[:space:]]*$' requirements-vcs.txt; then \
-        echo "ERROR: unpinned VCS requirement (pin it to a full commit SHA):" && grep -vE '@[0-9a-f]{40}[[:space:]]*$' requirements-vcs.txt && exit 1; \
+    sed -i -E '/^[[:space:]]*[^#]*git\+https:\/\/github.com\/facebookresearch\/sam2/d' requirements.in && \
+    if grep -qE '^[[:space:]]*[^#]*git\+' requirements.in; then \
+        echo "ERROR: VCS requirements can't be hash-locked:" && grep -E '^[[:space:]]*[^#]*git\+' requirements.in && exit 1; \
     fi && \
     sed -i -E '/^[[:space:]]*(torch|torchvision|torchaudio)([[:space:]]|[\[<>=!~;#]|$)/d' requirements.in && \
     echo "torch==${TORCH_VERSION}" >> requirements.in && \
@@ -170,10 +164,6 @@ RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     --index-url https://pypi.org/simple \
     --extra-index-url "${TORCH_INDEX_URL}" \
     -r requirements.lock && \
-    if [ -s requirements-vcs.txt ]; then \
-        echo "Installing VCS requirements (cannot be hash-locked):" && cat requirements-vcs.txt && \
-        SAM2_BUILD_CUDA=0 python3.12 -m pip install --no-cache-dir --no-deps --no-build-isolation -r requirements-vcs.txt; \
-    fi && \
     TORCH_VERSION="${TORCH_VERSION}" TORCHVISION_VERSION="${TORCHVISION_VERSION}" TORCHAUDIO_VERSION="${TORCHAUDIO_VERSION}" \
     python3.12 -c 'import importlib.metadata as m, os, sys; expected = {"torch": os.environ["TORCH_VERSION"], "torchvision": os.environ["TORCHVISION_VERSION"], "torchaudio": os.environ["TORCHAUDIO_VERSION"]}; mismatches = [f"{pkg}: expected {version}, got {m.version(pkg)}" for pkg, version in expected.items() if m.version(pkg) != version]; sys.exit("\n".join(mismatches) if mismatches else 0)'
 
