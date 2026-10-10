@@ -1,0 +1,43 @@
+name: Check Incompatibilities
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: "Image to check"
+        type: string
+        required: true
+        default: "bodasooqa/runpod-comfyui-starter:cuda13.0"
+
+jobs:
+  check-incompatibilities:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check incompatibilities
+        uses: ./.github/actions/smoke-test
+        with:
+          # smoke-test expects image-refs as a JSON array, so wrap the single
+          # input ref. inputs.image is always set here.
+          image-refs: ${{ format('["{0}"]', inputs.image) }}
+          profile: gpu
+          runpod-api-key: ${{ secrets.TESTING_RUNPOD_API_KEY }}
+          ssh-private-key: ${{ secrets.TESTING_RUNPOD_SSH_PRIVATE_KEY }}
+          test-jupyter: true
+          check_all_gpu: true
+          manufacturer: Nvidia
+          # Smoke: always verify ComfyUI is up + reachable on :8188
+          test-comfyui: true
+          # Run the full ComfyUI functional check on EVERY resolved GPU (that's
+          # the point of this matrix — catch GPU-specific generation failures,
+          # e.g. missing Blackwell kernels). Implies the :8188 reachability
+          # smoke, so 8188 is dropped from test_ports below (only 8080 left).
+          test-comfyui-functional: "true"
+          save-comfyui-images: "true"
+          on-skip: pass
+          test_ports: |
+            - 8080

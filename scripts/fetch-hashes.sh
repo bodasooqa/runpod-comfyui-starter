@@ -15,6 +15,13 @@ ltdrdata/ComfyUI-Manager|MANAGER_SHA
 kijai/ComfyUI-KJNodes|KJNODES_SHA
 MoonGoblinDev/Civicomfy|CIVICOMFY_SHA
 MadiatorLabs/ComfyUI-RunpodDirect|RUNPODDIRECT_SHA
+LucianoCirino/efficiency-nodes-comfyui|EFFICIENCY_SHA
+rgthree/rgthree-comfy|RGTHREE_SHA
+ltdrdata/ComfyUI-Impact-Pack|IMPACT_SHA
+ltdrdata/ComfyUI-Impact-Subpack|IMPACT_SUBPACK_SHA
+PGCRT/CRT-Nodes|CRT_SHA
+lquesada/ComfyUI-Inpaint-CropAndStitch|INPAINT_SHA
+Ltamann/ComfyUI-TBG-SAM3|TBGSAM3_SHA
 "
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

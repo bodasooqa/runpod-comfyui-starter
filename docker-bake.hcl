@@ -4,39 +4,39 @@ variable "TAG" {
 
 # === Version Pins (single source of truth) ===
 variable "COMFYUI_VERSION" {
-  default = "v0.17.2"
+  default = "v0.30.0"
 }
 variable "MANAGER_SHA" {
-  default = "c94236a61457"
+  default = "c352b16bb186"
 }
 variable "KJNODES_SHA" {
-  default = "6dfca48e00a5"
+  default = "bc8e4ce4254b"
 }
 variable "CIVICOMFY_SHA" {
   default = "555e984bbcb0"
 }
 variable "RUNPODDIRECT_SHA" {
-  default = "4de8269b5181"
+  default = "809065c9d2f3"
 }
 # Regular image (cu128)
 variable "TORCH_VERSION" {
-  default = "2.10.0"
+  default = "2.10.0+cu128"
 }
 variable "TORCHVISION_VERSION" {
-  default = "0.25.0"
+  default = "0.25.0+cu128"
 }
 variable "TORCHAUDIO_VERSION" {
-  default = "2.10.0"
+  default = "2.10.0+cu128"
 }
 # 5090 image (cu130) — can diverge from regular when needed
 variable "TORCH_VERSION_5090" {
-  default = "2.10.0"
+  default = "2.10.0+cu130"
 }
 variable "TORCHVISION_VERSION_5090" {
-  default = "0.25.0"
+  default = "0.25.0+cu130"
 }
 variable "TORCHAUDIO_VERSION_5090" {
-  default = "2.10.0"
+  default = "2.10.0+cu130"
 }
 variable "FILEBROWSER_VERSION" {
   default = "v2.59.0"
@@ -48,22 +48,22 @@ variable "EFFICIENCY_SHA" {
   default = "040e38864616"
 }
 variable "RGTHREE_SHA" {
-  default = "683836c46e89"
+  default = "d7297b42f0fa"
 }
 variable "IMPACT_SHA" {
-  default = "6a517ebe06fe"
+  default = "429d0159ad42"
 }
 variable "IMPACT_SUBPACK_SHA" {
   default = "50c7b71a6a22"
 }
 variable "CRT_SHA" {
-  default = "cd6b02fce98f"
+  default = "04e6b58391fa"
 }
 variable "INPAINT_SHA" {
-  default = "8e59ab12d670"
+  default = "8584b08d8517"
 }
 variable "TBGSAM3_SHA" {
-  default = "f6155bfb6ded"
+  default = "90e47e22c38f"
 }
 
 group "default" {
