@@ -21,6 +21,7 @@ ARG IMPACT_SUBPACK_SHA
 ARG CRT_SHA
 ARG INPAINT_SHA
 ARG TBGSAM3_SHA
+ARG SAM2_SHA
 
 # ---- CUDA variant (set in docker-bake.hcl per target) ----
 ARG CUDA_VERSION_DASH=12-8
@@ -130,6 +131,7 @@ WORKDIR /tmp/build
 # which would glue the last line of one file to the first line of the next.
 # VCS requirements (git+...) can't be hash-locked, so they are split out and
 # installed without deps after the locked set (their deps are in the lock).
+# Each must be pinned to a full commit SHA (sam2 is pinned via SAM2_SHA).
 RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     for node_dir in ComfyUI/custom_nodes/*/; do \
         if [ -f "$node_dir/requirements.txt" ]; then \
@@ -151,6 +153,10 @@ RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     echo "wheel" >> requirements.in && \
     grep -E '^[[:space:]]*[^#]*git\+' requirements.in > requirements-vcs.txt || true && \
     sed -i -E '/^[[:space:]]*[^#]*git\+/d' requirements.in && \
+    sed -i -E "s#git\+https://github.com/facebookresearch/sam2(\.git)?[[:space:]]*\$#git+https://github.com/facebookresearch/sam2@${SAM2_SHA}#" requirements-vcs.txt && \
+    if grep -vqE '@[0-9a-f]{40}[[:space:]]*$' requirements-vcs.txt; then \
+        echo "ERROR: unpinned VCS requirement (pin it to a full commit SHA):" && grep -vE '@[0-9a-f]{40}[[:space:]]*$' requirements-vcs.txt && exit 1; \
+    fi && \
     sed -i -E '/^[[:space:]]*(torch|torchvision|torchaudio)([[:space:]]|[\[<>=!~;#]|$)/d' requirements.in && \
     echo "torch==${TORCH_VERSION}" >> requirements.in && \
     echo "torchvision==${TORCHVISION_VERSION}" >> requirements.in && \
