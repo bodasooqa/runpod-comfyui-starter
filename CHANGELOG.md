@@ -49,6 +49,13 @@ On each release (e.g. `2.0.0`):
 - PyTorch 2.10.0 + torchvision 0.25.0 + torchaudio 2.10.0 for both images.
 - Separate PyTorch version pins for regular and CUDA 13.0 images so versions can diverge independently.
 
+### Changed
+
+- ComfyUI v0.39.0 (source archive now fetched from `Comfy-Org/ComfyUI`).
+- PyTorch 2.11.0 + torchvision 0.26.0 + torchaudio 2.11.0 for both images (2.11.0 is the last release with cu128 wheels and the last torchaudio release).
+- FileBrowser v2.63.23.
+- All baked custom nodes bumped to their latest commits.
+
 ### Fixed
 
 - Runtime pip operations now inherit a baked constraint file for the CUDA-specific PyTorch stack, preventing CUDA 12.8 images from accidentally upgrading to newer `cu130` PyTorch wheels during legacy venv migration or custom-node dependency installs.

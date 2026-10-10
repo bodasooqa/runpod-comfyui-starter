@@ -122,15 +122,15 @@ Recognized at runtime by the start scripts:
 - **Version pins live in `docker-bake.hcl`** (single source of truth, not in the Dockerfiles). Dockerfiles declare `ARG` names but the default values are set in the bake file:
   - `COMFYUI_VERSION` — ComfyUI release tag
   - `MANAGER_SHA`, `KJNODES_SHA`, `CIVICOMFY_SHA`, `RUNPODDIRECT_SHA`, `EFFICIENCY_SHA`, `RGTHREE_SHA`, `IMPACT_SHA`, `IMPACT_SUBPACK_SHA`, `CRT_SHA`, `INPAINT_SHA`, `TBGSAM3_SHA` — custom node commit hashes
-  - `TORCH_VERSION`, `TORCHVISION_VERSION`, `TORCHAUDIO_VERSION` — PyTorch stack versions with local build suffix (e.g. `2.10.0+cu128`, regular image)
-  - `TORCH_VERSION_5090`, `TORCHVISION_VERSION_5090`, `TORCHAUDIO_VERSION_5090` — PyTorch stack versions for the CUDA 13 image (e.g. `2.10.0+cu130`, can diverge)
+  - `TORCH_VERSION`, `TORCHVISION_VERSION`, `TORCHAUDIO_VERSION` — PyTorch stack versions with local build suffix (e.g. `2.11.0+cu128`, regular image)
+  - `TORCH_VERSION_5090`, `TORCHVISION_VERSION_5090`, `TORCHAUDIO_VERSION_5090` — PyTorch stack versions for the CUDA 13 image (e.g. `2.11.0+cu130`, can diverge)
   - `CUDA_VERSION_DASH` — CUDA toolkit apt package suffix (e.g., `12-8`, `13-0`)
   - `TORCH_INDEX_SUFFIX` — PyTorch wheel index (e.g., `cu128`, `cu130`)
   - `FILEBROWSER_VERSION` + `FILEBROWSER_SHA256` — FileBrowser binary with checksum
 - To update a version: edit the corresponding `variable` block in `docker-bake.hcl`.
 - CI or ad-hoc builds can override any variable via environment variables:
   ```bash
-  COMFYUI_VERSION=v0.30.0 docker buildx bake regular
+  COMFYUI_VERSION=v0.39.0 docker buildx bake regular
   ```
 - `scripts/fetch-hashes.sh` queries the GitHub API for the latest commit hash of each custom node repo and prints HCL-formatted variable blocks ready to copy-paste into `docker-bake.hcl`. Set `GITHUB_TOKEN` env var for authenticated requests (higher API rate limit).
 - Source code is downloaded as zip archives from GitHub (no git clone in build or runtime).

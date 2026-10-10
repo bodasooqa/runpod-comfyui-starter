@@ -4,45 +4,45 @@ variable "TAG" {
 
 # === Version Pins (single source of truth) ===
 variable "COMFYUI_VERSION" {
-  default = "v0.30.0"
+  default = "v0.39.0"
 }
 variable "MANAGER_SHA" {
-  default = "c352b16bb186"
+  default = "87ed66b80bda"
 }
 variable "KJNODES_SHA" {
-  default = "bc8e4ce4254b"
+  default = "d7641533d663"
 }
 variable "CIVICOMFY_SHA" {
   default = "555e984bbcb0"
 }
 variable "RUNPODDIRECT_SHA" {
-  default = "809065c9d2f3"
+  default = "9e32b1a09577"
 }
 # Regular image (cu128)
 variable "TORCH_VERSION" {
-  default = "2.10.0+cu128"
+  default = "2.11.0+cu128"
 }
 variable "TORCHVISION_VERSION" {
-  default = "0.25.0+cu128"
+  default = "0.26.0+cu128"
 }
 variable "TORCHAUDIO_VERSION" {
-  default = "2.10.0+cu128"
+  default = "2.11.0+cu128"
 }
 # 5090 image (cu130) — can diverge from regular when needed
 variable "TORCH_VERSION_5090" {
-  default = "2.10.0+cu130"
+  default = "2.11.0+cu130"
 }
 variable "TORCHVISION_VERSION_5090" {
-  default = "0.25.0+cu130"
+  default = "0.26.0+cu130"
 }
 variable "TORCHAUDIO_VERSION_5090" {
-  default = "2.10.0+cu130"
+  default = "2.11.0+cu130"
 }
 variable "FILEBROWSER_VERSION" {
-  default = "v2.59.0"
+  default = "v2.63.23"
 }
 variable "FILEBROWSER_SHA256" {
-  default = "8cd8c3baecb086028111b912f252a6e3169737fa764b5c510139e81f9da87799"
+  default = "b14db2bb8033caa3f80205eb6578b2ed0744ebd9e716b790bc4a9703ce909e88"
 }
 variable "EFFICIENCY_SHA" {
   default = "040e38864616"
