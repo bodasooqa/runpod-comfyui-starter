@@ -3,9 +3,10 @@ This document exists for non-obvious, error-prone shortcomings in the codebase, 
 
 ---
 
-## Runpod Template IDs
+## Fork of runpod-workers/comfyui-base
 
-- **Default (CUDA 12.8):** `cw3nka7d08` — README: `README.md`
-- **CUDA 13:** `2lv7ev3wfp` — README: `README_CUDA13.md`
+This repo is a fork of [runpod-workers/comfyui-base](https://github.com/runpod-workers/comfyui-base). Fork-only additions: `services/` (web UI on :8081), `serverless/`, `scripts/download_models.sh`, and seven extra baked custom nodes. When merging upstream, keep these in sync:
 
-Templates are managed on the Runpod platform. Use `../template-utils/scripts/` to read and update them.
+- The baked custom node list lives in four places: Dockerfile download + `git init` blocks, Dockerfile bundle manifest (`.runpod-bundle-version`), `BAKED_NODES` in `start.sh`, and `NODES` in `scripts/fetch-hashes.sh`. SHAs live in `docker-bake.hcl`.
+- Upstream CI runs on Blacksmith runners and publishes `runpod/comfyui`; the fork uses `ubuntu-latest` and `bodasooqa/runpod-comfyui-starter`.
+- Upstream Runpod template IDs (`cw3nka7d08`, `2lv7ev3wfp`) belong to runpod-workers, not this fork.
