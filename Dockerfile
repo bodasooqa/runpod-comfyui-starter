@@ -58,7 +58,7 @@ ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64
 
 # Download pinned source archives
 WORKDIR /tmp/build
-RUN curl -fSL "https://github.com/comfyanonymous/ComfyUI/archive/refs/tags/${COMFYUI_VERSION}.tar.gz" -o comfyui.tar.gz && \
+RUN curl -fSL "https://github.com/Comfy-Org/ComfyUI/archive/refs/tags/${COMFYUI_VERSION}.tar.gz" -o comfyui.tar.gz && \
     mkdir -p ComfyUI && tar xzf comfyui.tar.gz --strip-components=1 -C ComfyUI && rm comfyui.tar.gz
 
 WORKDIR /tmp/build/ComfyUI/custom_nodes
@@ -89,7 +89,7 @@ RUN curl -fSL "https://github.com/ltdrdata/ComfyUI-Manager/archive/${MANAGER_SHA
 # and users can update via Manager at their own risk
 RUN cd /tmp/build/ComfyUI && \
     git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI ${COMFYUI_VERSION}" && git tag "${COMFYUI_VERSION}" && \
-    git remote add origin https://github.com/comfyanonymous/ComfyUI.git && \
+    git remote add origin https://github.com/Comfy-Org/ComfyUI.git && \
     cd /tmp/build/ComfyUI/custom_nodes/ComfyUI-Manager && \
     git init && git add -A && git -c user.name=- -c user.email=- commit -q -m "ComfyUI-Manager ${MANAGER_SHA}" && \
     git remote add origin https://github.com/ltdrdata/ComfyUI-Manager.git && \
