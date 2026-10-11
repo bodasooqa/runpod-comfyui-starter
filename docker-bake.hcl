@@ -57,7 +57,7 @@ variable "IMPACT_SUBPACK_SHA" {
   default = "50c7b71a6a22"
 }
 variable "CRT_SHA" {
-  default = "04e6b58391fa"
+  default = "cd6b02fce98f"
 }
 variable "INPAINT_SHA" {
   default = "8584b08d8517"

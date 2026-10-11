@@ -126,10 +126,14 @@ RUN cd /tmp/build/ComfyUI && \
 
 # Generate lock file from all requirements (including torch pins), then install with hash verification
 WORKDIR /tmp/build
-RUN cat ComfyUI/requirements.txt > requirements.in && \
+# Append a newline after each file: some requirements.txt lack a trailing newline,
+# which would glue the last line of one file to the first line of the next.
+# sam2 (optional git+ dependency of Impact-Pack) is dropped: it is not needed and
+# VCS requirements can't be hash-locked, so any other git+ line fails the build.
+RUN { cat ComfyUI/requirements.txt; echo; } > requirements.in && \
     for node_dir in ComfyUI/custom_nodes/*/; do \
         if [ -f "$node_dir/requirements.txt" ]; then \
-            cat "$node_dir/requirements.txt" >> requirements.in; \
+            { cat "$node_dir/requirements.txt"; echo; } >> requirements.in; \
         fi; \
     done && \
     echo "GitPython" >> requirements.in && \
@@ -143,6 +147,10 @@ RUN cat ComfyUI/requirements.txt > requirements.in && \
     echo "aiohttp" >> requirements.in && \
     echo "huggingface_hub" >> requirements.in && \
     echo "runpod" >> requirements.in && \
+    sed -i -E '/^[[:space:]]*[^#]*git\+https:\/\/github.com\/facebookresearch\/sam2/d' requirements.in && \
+    if grep -qE '^[[:space:]]*[^#]*git\+' requirements.in; then \
+        echo "ERROR: VCS requirements can't be hash-locked:" && grep -E '^[[:space:]]*[^#]*git\+' requirements.in && exit 1; \
+    fi && \
     sed -i -E '/^[[:space:]]*(torch|torchvision|torchaudio)([[:space:]]|[\[<>=!~;#]|$)/d' requirements.in && \
     echo "torch==${TORCH_VERSION}" >> requirements.in && \
     echo "torchvision==${TORCHVISION_VERSION}" >> requirements.in && \
